@@ -7,7 +7,7 @@ import { Vue, Component } from 'nuxt-property-decorator'
 
 @Component({
   fetch(this: Index) {
-    fetch('http://localhost:8080').then(response => response.json()).then((data) => this.title = data.title)
+    fetch('http://localhost:8080/api/title').then(response => response.json()).then((data) => this.title = data.title)
   }
 })
 export default class Index extends Vue{
