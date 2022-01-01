@@ -3,15 +3,14 @@
 </template>
 
 <script lang="ts">
-export default{
-  data() {
-    return {
-      title:  ''
-    }
-  },
+import { Vue, Component } from 'nuxt-property-decorator'
 
-  fetch() {
+@Component({
+  fetch(this: Index) {
     fetch('http://localhost:8080').then(response => response.json()).then((data) => this.title = data.title)
   }
+})
+export default class Index extends Vue{
+  title = '';
 }
 </script>
