@@ -6,7 +6,7 @@ const port = 8080
 app.use(cors())
 
 app.get('/', (req, res) => {
-  res.json({title: 'pokery'})
+  res.json({title: 'pokery!!!'})
 })
 
 app.listen(port, () => {

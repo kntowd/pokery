@@ -1,15 +1,17 @@
 <template>
-  <h1>pokery!!!</h1>
+  <h1>{{title}}</h1>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
-  name: "IndexPage",
+export default{
+  data() {
+    return {
+      title:  ''
+    }
+  },
 
   fetch() {
-    fetch('http://localhost:8080').then(response => response.json()).then(data => console.log(data))
-  },
-});
+    fetch('http://localhost:8080').then(response => response.json()).then((data) => this.title = data.title)
+  }
+}
 </script>
