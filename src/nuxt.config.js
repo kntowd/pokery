@@ -1,3 +1,7 @@
+const environment = process.env.NODE_ENV || 'development';
+// ESM modules の import は制的なのでパスに変数をいれることはできない
+const env =  require(`./env/env.${environment}.js`);
+
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
@@ -42,5 +46,13 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  env: {
+    asdfa: 'fdsfasdf'
+  },
+
+  publicRuntimeConfig: {
+    ...env
   }
 }
