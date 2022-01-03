@@ -1,6 +1,8 @@
 import { Sequelize } from "sequelize";
 
-export const dbClient = new Sequelize("pokery", "root", "Kenta223", {
+const dbClient = new Sequelize("pokery", "root", "Kenta223", {
   host: "localhost",
   dialect: "mysql",
 });
+
+export default dbClient;

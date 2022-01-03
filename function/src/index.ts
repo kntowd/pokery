@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dbClient } from "./connection";
+import dbClient from "./connection";
 
 const express = require("express");
 const cors = require("cors");

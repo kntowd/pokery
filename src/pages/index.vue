@@ -21,6 +21,7 @@ import { Vue, Component } from "nuxt-property-decorator";
 export default class Index extends Vue {
   title = "";
 
+  // eslint-disable-next-line class-methods-use-this
   createRoom() {
     console.log("create room!!");
   }
