@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+import { io } from "socket.io-client";
 
 @Component({
   // eslint-disable-next-line
@@ -21,6 +22,12 @@ import { Vue, Component } from "nuxt-property-decorator";
 })
 export default class Index extends Vue {
   title = "";
+
+  // socket: Socket;
+
+  created() {
+    io("http://localhost:8080");
+  }
 
   // eslint-disable-next-line class-methods-use-this
   createRoom() {
