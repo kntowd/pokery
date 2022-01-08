@@ -9,7 +9,8 @@
 import { Vue, Component } from "nuxt-property-decorator";
 
 @Component({
-  fetch() {
+  // eslint-disable-next-line
+  fetch(this: Index) {
     const { apiBaseUrl } = this.$nuxt.context.$config.env;
     fetch(`${apiBaseUrl}/api/title`)
       .then((response) => response.json())
