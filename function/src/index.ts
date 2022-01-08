@@ -9,7 +9,12 @@ const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 const cors = require("cors");
 
 const port = 8080;
