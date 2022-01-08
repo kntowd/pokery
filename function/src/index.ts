@@ -2,9 +2,21 @@ import { Request, Response } from "express";
 import dbClient from "./connection";
 
 const express = require("express");
-const cors = require("cors");
+const http = require("http");
 
 const app = express();
+
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+const cors = require("cors");
+
 const port = 8080;
 
 app.use(cors());
@@ -13,7 +25,11 @@ app.get("/api/title", (_req: Request, res: Response) => {
   res.json({ title: "pokery!!!" });
 });
 
-app.listen(port, async () => {
+io.on("connection", () => {
+  console.log("a user connected");
+});
+
+server.listen(port, async () => {
   try {
     await dbClient.authenticate();
     console.log("Connection has been established successfully.");
