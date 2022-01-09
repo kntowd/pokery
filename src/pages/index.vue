@@ -7,31 +7,34 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 @Component({
   // eslint-disable-next-line
   fetch(this: Index) {
-    const { apiBaseUrl } = this.$nuxt.context.$config.env;
-    fetch(`${apiBaseUrl}/api/title`)
-      .then((response) => response.json())
-      .then((data) => {
-        this.title = data.title;
-      });
+    this.title = "pokery";
   },
 })
 export default class Index extends Vue {
   title = "";
 
-  // socket: Socket;
+  socket: Socket | null = null;
 
   created() {
-    io("http://localhost:8080");
+    this.socket = io("http://localhost:8080");
   }
 
   // eslint-disable-next-line class-methods-use-this
   createRoom() {
-    console.log("create room!!");
+    const { apiBaseUrl } = this.$nuxt.context.$config.env;
+    fetch(`${apiBaseUrl}/api/rooms`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        window.location.href = `http://localhost:3000/rooms/${data.roomId}`;
+      });
+    // window.location.href = "https://apple.com";
   }
 }
 </script>
