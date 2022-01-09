@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
 
 const express = require("express");
@@ -21,8 +22,8 @@ const port = 8080;
 
 app.use(cors());
 
-app.get("/api/title", (_req: Request, res: Response) => {
-  res.json({ title: "pokery!!!" });
+app.post("/api/rooms", (_req: Request, res: Response) => {
+  res.json({ roomId: getRandomNumber() });
 });
 
 io.on("connection", () => {
