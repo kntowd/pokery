@@ -23,7 +23,8 @@ const port = 8080;
 app.use(cors());
 
 app.post("/api/rooms", (_req: Request, res: Response) => {
-  res.json({ roomId: getRandomNumber() });
+  const roomId = getRandomNumber();
+  res.json({ roomId });
 });
 
 io.on("connection", () => {
