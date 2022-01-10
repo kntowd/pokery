@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { QueryTypes } from "sequelize";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
 
@@ -22,8 +23,17 @@ const port = 8080;
 
 app.use(cors());
 
-app.post("/api/rooms", (_req: Request, res: Response) => {
+app.post("/api/rooms", async (_req: Request, res: Response) => {
   const roomId = getRandomNumber();
+  try {
+    await dbClient.query("INSERT INTO rooms (roomId) VALUES(:roomId)", {
+      replacements: { roomId },
+      type: QueryTypes.INSERT,
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
   res.json({ roomId });
 });
 
