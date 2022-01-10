@@ -24,7 +24,6 @@ export default class Index extends Vue {
     this.socket = io("http://localhost:8080");
   }
 
-  // eslint-disable-next-line class-methods-use-this
   createRoom() {
     const { apiBaseUrl } = this.$nuxt.context.$config.env;
     fetch(`${apiBaseUrl}/api/rooms`, {
@@ -34,7 +33,6 @@ export default class Index extends Vue {
       .then((data) => {
         window.location.href = `http://localhost:3000/rooms/${data.roomId}`;
       });
-    // window.location.href = "https://apple.com";
   }
 }
 </script>
