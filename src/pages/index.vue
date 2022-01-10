@@ -21,17 +21,18 @@ export default class Index extends Vue {
   socket: Socket | null = null;
 
   created() {
-    this.socket = io("http://localhost:8080");
+    const { apiBaseUrl } = this.$nuxt.context.$config.env;
+    this.socket = io(apiBaseUrl);
   }
 
   createRoom() {
-    const { apiBaseUrl } = this.$nuxt.context.$config.env;
+    const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
     fetch(`${apiBaseUrl}/api/rooms`, {
       method: "POST",
     })
       .then((response) => response.json())
       .then((data) => {
-        window.location.href = `http://localhost:3000/rooms/${data.roomId}`;
+        window.location.href = `${appBaseUrl}/rooms/${data.roomId}`;
       });
   }
 }

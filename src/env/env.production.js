@@ -1,3 +1,5 @@
+/* eslint-disable */
 export const env = {
-  apiBaseUrl: 'https://pokery.tokyo'
-}
+  apiBaseUrl: "https://pokery.tokyo",
+  appBaseUrl: "https://pokery.tokyo",
+};
