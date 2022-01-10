@@ -1,3 +1,3 @@
 <template>
-  <h1>test</h1>
+  <p>部屋です</p>
 </template>
