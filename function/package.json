@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "dev": "nodemon --exec 'yarn build && node lib/index.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kntowd",
