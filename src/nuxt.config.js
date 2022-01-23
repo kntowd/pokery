@@ -1,5 +1,6 @@
 const environment = process.env.NODE_ENV || "development";
-// ESM modules の import は制的なのでパスに変数をいれることはできない
+
+// ES modules の import は静的なのでパスに変数をいれることはできない
 // eslint-disable-next-line
 const env = require(`./env/env.${environment}.js`);
 
