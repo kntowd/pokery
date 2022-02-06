@@ -2,9 +2,9 @@ import { Sequelize } from "sequelize";
 import runtimeConfig from "../config/functionsConfig";
 
 const dbClient = new Sequelize(
-  runtimeConfig.dbName,
-  runtimeConfig.user,
-  runtimeConfig.password,
+  runtimeConfig.sql.dbName,
+  runtimeConfig.sql.user,
+  runtimeConfig.sql.password,
   {
     host: "localhost",
     dialect: "mysql",
