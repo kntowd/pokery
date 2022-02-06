@@ -37,6 +37,16 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+app.post("/api/users/:roomId", async (req: Request, res: Response) => {
+  console.log(req.params.roomId, req.params.userId == null);
+  res.send();
+});
+
+app.get("/api/users/:roomId", async (req: Request, res: Response) => {
+  console.log(req.params.roomId, req.params.userId == null);
+  res.send();
+});
+
 io.on("connection", () => {
   console.log("a user connected");
 });
