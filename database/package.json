@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "sequelize db:migrate",
-    "db:migrate:production": "NODE_ENV=production sequelize db:migrate"
+    "db:migrate:undo": "sequelize db:migrate:undo",
+    "db:migrate:production": "NODE_ENV=production sequelize db:migrate",
+    "db:migrate:undo:production": "NODE_ENV=production sequelize db:migrate:undo"
   },
   "author": "kntowd",
   "license": "ISC",

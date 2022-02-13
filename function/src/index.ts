@@ -7,6 +7,8 @@ const express = require("express");
 const http = require("http");
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -26,7 +28,7 @@ app.use(cors());
 app.post("/api/rooms", async (_req: Request, res: Response) => {
   const roomId = getRandomNumber();
   try {
-    await dbClient.query("INSERT INTO rooms (roomId) VALUES(:roomId)", {
+    await dbClient.query("INSERT INTO rooms (id) VALUES(:roomId)", {
       replacements: { roomId },
       type: QueryTypes.INSERT,
     });
@@ -35,6 +37,39 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   }
 
   res.json({ roomId });
+});
+
+app.post("/api/users/:roomId", async (req: Request, res: Response) => {
+  try {
+    await dbClient.query(
+      "INSERT INTO users (name, room_id) VALUES(:name, :roomId)",
+      {
+        replacements: { name: req.body.name, roomId: req.params.roomId },
+        type: QueryTypes.INSERT,
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
+  console.log(req.params.roomId, req.params.userId == null);
+  res.send();
+});
+
+app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
+  try {
+    const user = await dbClient.query(
+      "SELECT name, point, room_id AS roomId FROM users WHERE room_id = :roomId AND id = :userId;",
+      {
+        replacements: { userId: req.params.userId, roomId: req.params.roomId },
+        type: QueryTypes.SELECT,
+      }
+    );
+    console.log("user------------------------", user);
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 io.on("connection", () => {
