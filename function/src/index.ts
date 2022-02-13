@@ -25,6 +25,7 @@ const port = 8080;
 
 app.use(cors());
 
+// 部屋を作成
 app.post("/api/rooms", async (_req: Request, res: Response) => {
   const roomId = getRandomNumber();
   try {
@@ -39,6 +40,7 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+// 特定の部屋のユーザを全て取得
 app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
     const users = await dbClient.query(
@@ -58,6 +60,7 @@ app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   res.send();
 });
 
+// 部屋に紐づくユーザを作成
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
     await dbClient.query(
@@ -75,6 +78,7 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   res.send();
 });
 
+// ユーザを取得
 app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
   try {
     const user = await dbClient.query(
@@ -94,6 +98,7 @@ app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
   }
 });
 
+// ユーザのポイントを更新
 app.put("/api/users/:userId", async (req: Request, res: Response) => {
   try {
     const user = await dbClient.query(
