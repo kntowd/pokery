@@ -7,6 +7,8 @@ const express = require("express");
 const http = require("http");
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -38,6 +40,18 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
 });
 
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
+  try {
+    await dbClient.query(
+      "INSERT INTO users (name, room_id) VALUES(:name, :roomId)",
+      {
+        replacements: { name: req.body.name, roomId: req.params.roomId },
+        type: QueryTypes.INSERT,
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
   console.log(req.params.roomId, req.params.userId == null);
   res.send();
 });
