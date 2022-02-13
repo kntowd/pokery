@@ -26,7 +26,7 @@ app.use(cors());
 app.post("/api/rooms", async (_req: Request, res: Response) => {
   const roomId = getRandomNumber();
   try {
-    await dbClient.query("INSERT INTO rooms (roomId) VALUES(:roomId)", {
+    await dbClient.query("INSERT INTO rooms (id) VALUES(:roomId)", {
       replacements: { roomId },
       type: QueryTypes.INSERT,
     });
@@ -42,8 +42,19 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   res.send();
 });
 
-app.get("/api/users/:roomId", async (req: Request, res: Response) => {
-  console.log(req.params.roomId, req.params.userId == null);
+app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
+  try {
+    const user = await dbClient.query(
+      "SELECT name, point, room_id AS roomId FROM users WHERE room_id = :roomId AND id = :userId;",
+      {
+        replacements: { userId: req.params.userId, roomId: req.params.roomId },
+        type: QueryTypes.SELECT,
+      }
+    );
+    console.log("user------------------------", user);
+  } catch (err) {
+    console.error(err);
+  }
   res.send();
 });
 
