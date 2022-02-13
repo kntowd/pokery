@@ -25,6 +25,7 @@ const port = 8080;
 
 app.use(cors());
 
+// 部屋を作成
 app.post("/api/rooms", async (_req: Request, res: Response) => {
   const roomId = getRandomNumber();
   try {
@@ -39,6 +40,27 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+// 特定の部屋のユーザを全て取得
+app.get("/api/users/:roomId", async (req: Request, res: Response) => {
+  try {
+    const users = await dbClient.query(
+      "SELECT id, name, point, room_id AS roomId FROM users WHERE room_id = :roomId",
+      {
+        replacements: { roomId: Number(req.params.roomId) },
+        type: QueryTypes.SELECT,
+      }
+    );
+    console.log(users);
+    res.send(users);
+  } catch (err) {
+    console.error(err);
+  }
+
+  console.log(req.params.roomId, req.params.userId == null);
+  res.send();
+});
+
+// 部屋に紐づくユーザを作成
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
     await dbClient.query(
@@ -56,16 +78,36 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   res.send();
 });
 
+// ユーザを取得
 app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
   try {
     const user = await dbClient.query(
       "SELECT name, point, room_id AS roomId FROM users WHERE room_id = :roomId AND id = :userId;",
       {
-        replacements: { userId: req.params.userId, roomId: req.params.roomId },
+        replacements: {
+          userId: req.params.userId,
+          roomId: req.params.roomId,
+        },
         type: QueryTypes.SELECT,
       }
     );
     console.log("user------------------------", user);
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// ユーザのポイントを更新
+app.put("/api/users/:userId", async (req: Request, res: Response) => {
+  try {
+    const user = await dbClient.query(
+      "UPDATE users SET point = :point WHERE id = :userId",
+      {
+        replacements: { userId: req.params.userId, point: req.body.point },
+        type: QueryTypes.INSERT,
+      }
+    );
     res.send(user);
   } catch (err) {
     console.error(err);
