@@ -52,10 +52,10 @@ app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
       }
     );
     console.log("user------------------------", user);
+    res.send(user);
   } catch (err) {
     console.error(err);
   }
-  res.send();
 });
 
 io.on("connection", () => {
