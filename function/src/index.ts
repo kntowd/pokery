@@ -39,6 +39,25 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+app.get("/api/users/:roomId", async (req: Request, res: Response) => {
+  try {
+    const users = await dbClient.query(
+      "SELECT id, name, point, room_id AS roomId FROM users WHERE room_id = :roomId",
+      {
+        replacements: { roomId: Number(req.params.roomId) },
+        type: QueryTypes.SELECT,
+      }
+    );
+    console.log(users);
+    res.send(users);
+  } catch (err) {
+    console.error(err);
+  }
+
+  console.log(req.params.roomId, req.params.userId == null);
+  res.send();
+});
+
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
     await dbClient.query(
