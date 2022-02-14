@@ -41,19 +41,19 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
 
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
-    await dbClient.query(
+    const userId = await dbClient.query(
       "INSERT INTO users (name, room_id) VALUES(:name, :roomId)",
       {
         replacements: { name: req.body.name, roomId: req.params.roomId },
         type: QueryTypes.INSERT,
       }
     );
+    res.json(userId);
   } catch (err) {
     console.error(err);
   }
 
   console.log(req.params.roomId, req.params.userId == null);
-  res.send();
 });
 
 app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
