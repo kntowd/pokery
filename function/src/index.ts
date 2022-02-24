@@ -48,7 +48,7 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
         type: QueryTypes.INSERT,
       }
     );
-    res.json(userId);
+    res.json({ userId: userId[0] });
   } catch (err) {
     console.error(err);
   }
