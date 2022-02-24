@@ -32,7 +32,8 @@ export default class Index extends Vue {
     })
       .then((response) => response.json())
       .then((data) => {
-        window.location.href = `${appBaseUrl}/rooms/${data.roomId}`;
+        sessionStorage.setItem("roomId", data.roomId);
+        window.location.href = `${appBaseUrl}/rooms/${data.roomId}/users`;
       });
   }
 }
