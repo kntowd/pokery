@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-    <div class="card__item">1</div>
+    <div class="card__item" @click="changePoint(1)">1</div>
     <div class="card__item">2</div>
     <div class="card__item">3</div>
     <div class="card__item">5</div>
@@ -8,6 +8,20 @@
     <div class="card__item">13</div>
   </div>
 </template>
+
+<script la="ts">
+import { Vue, Component } from "nuxt-property-decorator";
+
+@Component
+export default class Room extends Vue {
+  point = 0;
+
+  changePoint(point) {
+    console.log(point);
+    this.point = point;
+  }
+}
+</script>
 
 <style>
 .card {
@@ -25,5 +39,6 @@
   margin: 20px;
   line-height: 200px;
   text-align: center;
+  cursor: pointer;
 }
 </style>
