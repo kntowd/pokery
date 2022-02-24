@@ -27,8 +27,7 @@ export default class CreateUser extends Vue {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data, "hfdsoafasd");
-        this.userId = data.userId;
+        sessionStorage.setItem("userId", data.userId);
       });
   }
 }
