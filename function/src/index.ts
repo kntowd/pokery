@@ -118,6 +118,25 @@ io.on("connection", (socket: Socket) => {
     socket.join(data.roomId);
     io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
   });
+
+  socket.on("add_point", async (data) => {
+    await dbClient.query("UPDATE users SET point = :point WHERE id = :userId", {
+      replacements: { userId: data.userId, point: data.point },
+      type: QueryTypes.INSERT,
+    });
+
+    const users = await dbClient.query(
+      "SELECT id, point FROM users WHERE room_id = :roomId;",
+      {
+        replacements: {
+          roomId: data.roomId,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    io.to(data.roomId).emit("user_points", { users });
+  });
 });
 
 server.listen(port, async () => {

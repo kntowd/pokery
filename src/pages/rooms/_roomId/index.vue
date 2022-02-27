@@ -38,10 +38,15 @@ export default class Room extends Vue {
     this.socket = io(apiBaseUrl);
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
     this.socket.on("joined_room", (data) => console.log(data));
+    this.socket.on("user_points", (data) => console.log(data));
   }
 
   changePoint(point) {
-    console.log(point);
+    this.socket.emit("add_point", {
+      roomId: this.$route.params.roomId,
+      userId: sessionStorage.userId,
+      point,
+    });
     this.point = point;
   }
 }

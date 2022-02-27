@@ -18,6 +18,8 @@ export default class CreateUser extends Vue {
   createUser() {
     const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
 
+    sessionStorage.setItem("roomId", this.$route.params.roomId);
+
     fetch(`${apiBaseUrl}/api/users/${this.$route.params.roomId}`, {
       method: "POST",
       headers: {
