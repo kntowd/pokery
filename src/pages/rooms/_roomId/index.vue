@@ -11,10 +11,20 @@
 
 <script la="ts">
 import { Vue, Component } from "nuxt-property-decorator";
+import { io } from "socket.io-client";
 
 @Component
 export default class Room extends Vue {
   point = 0;
+
+  socket = null;
+
+  created() {
+    const { apiBaseUrl } = this.$nuxt.context.$config.env;
+    this.socket = io(apiBaseUrl);
+    this.socket.emit("join_room", { roomId: this.$route.params.roomId });
+    this.socket.on("joined_room", (data) => console.log(data));
+  }
 
   changePoint(point) {
     console.log(point);

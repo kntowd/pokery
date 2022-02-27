@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { QueryTypes } from "sequelize";
+import { Server, Socket } from "socket.io";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
 
@@ -11,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer(app);
-const { Server } = require("socket.io");
 
 const io = new Server(server, {
   cors: {
@@ -50,13 +50,11 @@ app.get("/api/users/:roomId", async (req: Request, res: Response) => {
         type: QueryTypes.SELECT,
       }
     );
-    console.log(users);
     res.send(users);
   } catch (err) {
     console.error(err);
   }
 
-  console.log(req.params.roomId, req.params.userId == null);
   res.send();
 });
 
@@ -114,8 +112,12 @@ app.put("/api/users/:userId", async (req: Request, res: Response) => {
   }
 });
 
-io.on("connection", () => {
+io.on("connection", (socket: Socket) => {
   console.log("a user connected");
+  socket.on("join_room", async (data: { roomId: string }) => {
+    socket.join(data.roomId);
+    io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
+  });
 });
 
 server.listen(port, async () => {

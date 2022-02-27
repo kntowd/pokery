@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
-import { io, Socket } from "socket.io-client";
 
 @Component({
   // eslint-disable-next-line
@@ -17,13 +16,6 @@ import { io, Socket } from "socket.io-client";
 })
 export default class Index extends Vue {
   title = "";
-
-  socket: Socket | null = null;
-
-  created() {
-    const { apiBaseUrl } = this.$nuxt.context.$config.env;
-    this.socket = io(apiBaseUrl);
-  }
 
   createRoom() {
     const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
