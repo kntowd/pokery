@@ -40,6 +40,21 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
+  try {
+    const room = await dbClient.query(
+      "SELECT * from rooms where id = :roomId",
+      {
+        replacements: { roomId: req.params.roomId },
+        type: QueryTypes.SELECT,
+      }
+    );
+    res.send(room);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // 特定の部屋のユーザを全て取得
 app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
@@ -150,6 +165,10 @@ io.on("connection", (socket: Socket) => {
     );
 
     io.to(data.roomId).emit("user_points", { users });
+  });
+
+  socket.on("revealAll", (data) => {
+    io.to(data.roomId).emit("revealedAll");
   });
 });
 

@@ -12,11 +12,14 @@
       <div
         class="user-card__item"
         :class="{ 'user-card__item--answered': isAnswered(user) }"
-        v-for="user in users"
+        v-for="user in getUsers"
         :key="user.id"
       >
         {{ user.point === "secret" ? "?" : user.point }}
       </div>
+    </div>
+    <div>
+      <button @click="revealAll()">Reveal cards</button>
     </div>
   </div>
 </template>
@@ -33,14 +36,17 @@ export default class Room extends Vue {
 
   users = [];
 
+  revealed = false;
+
+  apiBaseUrl = this.$nuxt.context.$config.env.apiBaseUrl;
+
   async created() {
-    const { apiBaseUrl } = this.$nuxt.context.$config.env;
     if (localStorage.userId == null || localStorage.roomId == null) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
     const response = await fetch(
-      `${apiBaseUrl}/api/users/${localStorage.userId}/${this.$route.params.roomId}`
+      `${this.apiBaseUrl}/api/users/${localStorage.userId}/${this.$route.params.roomId}`
     );
 
     const user = await response.json();
@@ -50,23 +56,29 @@ export default class Room extends Vue {
     }
 
     const usersResponse = await fetch(
-      `${apiBaseUrl}/api/users/${this.$route.params.roomId}`
+      `${this.apiBaseUrl}/api/users/${this.$route.params.roomId}`
     );
 
     const users = await usersResponse.json();
 
-    this.updateUsersPoint(users);
+    this.users = users;
 
-    this.socket = io(apiBaseUrl);
+    this.socket = io(this.apiBaseUrl);
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
     this.socket.on("joined_room", (data) => console.log(data));
     this.socket.on("user_points", (data) => {
-      this.updateUsersPoint(data.users);
+      this.users = data.users;
+    });
+    this.socket.on("revealedAll", () => {
+      this.revealed = true;
+      console.log("reveal");
     });
   }
 
-  updateUsersPoint(users) {
-    this.users = users.map((user) => {
+  get getUsers() {
+    if (this.revealed) return this.users;
+
+    return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
         return user;
       }
@@ -86,6 +98,19 @@ export default class Room extends Vue {
   // eslint-disable-next-line class-methods-use-this
   isAnswered(user) {
     return user.point != null;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async revealAll() {
+    const response = await fetch(
+      `${this.apiBaseUrl}/api/rooms/${this.$route.params.roomId}`
+    );
+
+    const room = await response.json();
+    console.log("room", room);
+
+    this.revealed = true;
+    this.socket.emit("revealAll", { roomId: localStorage.roomId });
   }
 }
 </script>
