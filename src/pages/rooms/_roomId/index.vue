@@ -1,11 +1,11 @@
 <template>
   <div class="card">
     <div class="card__item" @click="changePoint(1)">1</div>
-    <div class="card__item">2</div>
-    <div class="card__item">3</div>
-    <div class="card__item">5</div>
-    <div class="card__item">8</div>
-    <div class="card__item">13</div>
+    <div class="card__item" @click="changePoint(1)">2</div>
+    <div class="card__item" @click="changePoint(1)">3</div>
+    <div class="card__item" @click="changePoint(1)">5</div>
+    <div class="card__item" @click="changePoint(1)">8</div>
+    <div class="card__item" @click="changePoint(1)">13</div>
   </div>
 </template>
 
@@ -21,12 +21,12 @@ export default class Room extends Vue {
 
   async created() {
     const { apiBaseUrl } = this.$nuxt.context.$config.env;
-    if (sessionStorage.userId == null || sessionStorage.roomId == null) {
+    if (localStorage.userId == null || localStorage.roomId == null) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
     const response = await fetch(
-      `${apiBaseUrl}/api/users/${sessionStorage.userId}/${this.$route.params.roomId}`
+      `${apiBaseUrl}/api/users/${localStorage.userId}/${this.$route.params.roomId}`
     );
 
     const user = await response.json();
@@ -44,7 +44,7 @@ export default class Room extends Vue {
   changePoint(point) {
     this.socket.emit("add_point", {
       roomId: this.$route.params.roomId,
-      userId: sessionStorage.userId,
+      userId: localStorage.userId,
       point,
     });
     this.point = point;

@@ -113,6 +113,12 @@ app.put("/api/users/:userId", async (req: Request, res: Response) => {
 });
 
 io.on("connection", (socket: Socket) => {
+  console.log("socketId", socket.id);
+  socket.on("disconnect", (reason) => {
+    console.log(reason);
+    console.log(socket.id);
+  });
+
   console.log("a user connected");
   socket.on("join_room", async (data: { roomId: string }) => {
     socket.join(data.roomId);

@@ -24,7 +24,7 @@ export default class Index extends Vue {
     })
       .then((response) => response.json())
       .then((data) => {
-        sessionStorage.setItem("roomId", data.roomId);
+        localStorage.setItem("roomId", data.roomId);
         window.location.href = `${appBaseUrl}/rooms/${data.roomId}/users`;
       });
   }
