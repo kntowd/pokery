@@ -1,11 +1,11 @@
 <template>
   <div class="card">
     <div class="card__item" @click="changePoint(1)">1</div>
-    <div class="card__item" @click="changePoint(1)">2</div>
-    <div class="card__item" @click="changePoint(1)">3</div>
-    <div class="card__item" @click="changePoint(1)">5</div>
-    <div class="card__item" @click="changePoint(1)">8</div>
-    <div class="card__item" @click="changePoint(1)">13</div>
+    <div class="card__item" @click="changePoint(2)">2</div>
+    <div class="card__item" @click="changePoint(3)">3</div>
+    <div class="card__item" @click="changePoint(5)">5</div>
+    <div class="card__item" @click="changePoint(8)">8</div>
+    <div class="card__item" @click="changePoint(13)">13</div>
   </div>
 </template>
 
