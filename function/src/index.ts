@@ -54,8 +54,6 @@ app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
   }
-
-  res.send();
 });
 
 // 部屋に紐づくユーザを作成
@@ -122,6 +120,16 @@ io.on("connection", (socket: Socket) => {
   console.log("a user connected");
   socket.on("join_room", async (data: { roomId: string }) => {
     socket.join(data.roomId);
+    const users = await dbClient.query(
+      "SELECT id, point FROM users WHERE room_id = :roomId;",
+      {
+        replacements: {
+          roomId: data.roomId,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+    io.to(data.roomId).emit("user_points", { users });
     io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
   });
 

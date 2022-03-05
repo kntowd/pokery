@@ -9,7 +9,12 @@
       <div class="choices-card__item" @click="changePoint(13)">13</div>
     </div>
     <div class="user-card">
-      <div class="user-card__item" v-for="user in users" :key="user.id">
+      <div
+        class="user-card__item"
+        :class="{ 'user-card__item--answered': isAnswered(user) }"
+        v-for="user in users"
+        :key="user.id"
+      >
         {{ user.point === "secret" ? "?" : user.point }}
       </div>
     </div>
@@ -44,17 +49,28 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
+    const usersResponse = await fetch(
+      `${apiBaseUrl}/api/users/${this.$route.params.roomId}`
+    );
+
+    const users = await usersResponse.json();
+
+    this.updateUsersPoint(users);
+
     this.socket = io(apiBaseUrl);
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
     this.socket.on("joined_room", (data) => console.log(data));
     this.socket.on("user_points", (data) => {
-      // eslint-disable-next-line
-      this.users = data.users.map((user) => {
-        if (user.id === Number(localStorage.userId)) {
-          return user;
-        }
-        return { id: user.id, point: "secret" };
-      });
+      this.updateUsersPoint(data.users);
+    });
+  }
+
+  updateUsersPoint(users) {
+    this.users = users.map((user) => {
+      if (user.id === Number(localStorage.userId)) {
+        return user;
+      }
+      return { id: user.id, point: "secret" };
     });
   }
 
@@ -65,6 +81,11 @@ export default class Room extends Vue {
       point,
     });
     this.point = point;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  isAnswered(user) {
+    return user.point != null;
   }
 }
 </script>
@@ -103,5 +124,10 @@ export default class Room extends Vue {
   text-align: center;
   cursor: pointer;
   border-style: dotted;
+}
+
+.user-card__item--answered {
+  border-style: solid;
+  background-color: rgba(176, 123, 172, 0.4);
 }
 </style>
