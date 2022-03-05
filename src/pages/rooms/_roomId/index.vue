@@ -27,6 +27,7 @@
 <script la="ts">
 import { Vue, Component } from "nuxt-property-decorator";
 import { io } from "socket.io-client";
+import apiClient from "../../../lib/apiClient";
 
 @Component
 export default class Room extends Vue {
@@ -62,6 +63,10 @@ export default class Room extends Vue {
     const users = await usersResponse.json();
 
     this.users = users;
+
+    const room = await apiClient(`/rooms/${this.$route.params.roomId}`);
+
+    this.revealed = room.revealed;
 
     this.socket = io(this.apiBaseUrl);
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
@@ -102,13 +107,6 @@ export default class Room extends Vue {
 
   // eslint-disable-next-line class-methods-use-this
   async revealAll() {
-    const response = await fetch(
-      `${this.apiBaseUrl}/api/rooms/${this.$route.params.roomId}`
-    );
-
-    const room = await response.json();
-    console.log("room", room);
-
     this.revealed = true;
     this.socket.emit("revealAll", { roomId: localStorage.roomId });
   }
