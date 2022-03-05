@@ -15,10 +15,28 @@ export default class CreateUser extends Vue {
 
   userId = null;
 
-  createUser() {
+  async created() {
     const { apiBaseUrl } = this.$nuxt.context.$config.env;
+    const { roomId } = this.$route.params;
 
-    fetch(`${apiBaseUrl}/api/users/${this.$route.params.roomId}`, {
+    const response = await fetch(
+      `${apiBaseUrl}/api/users/${localStorage.userId}/${roomId}`
+    );
+
+    const user = await response.json();
+
+    if (user.length !== 0) {
+      this.$router.push(`/rooms/${roomId}`);
+    }
+  }
+
+  createUser() {
+    const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
+    const { roomId } = this.$route.params;
+
+    localStorage.setItem("roomId", roomId);
+
+    fetch(`${apiBaseUrl}/api/users/${roomId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +45,8 @@ export default class CreateUser extends Vue {
     })
       .then((response) => response.json())
       .then((data) => {
-        sessionStorage.setItem("userId", data.userId);
+        localStorage.setItem("userId", data.userId);
+        window.location.href = `${appBaseUrl}/rooms/${roomId}`;
       });
   }
 }

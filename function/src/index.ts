@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { QueryTypes } from "sequelize";
+import { Server, Socket } from "socket.io";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
 
@@ -11,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const server = http.createServer(app);
-const { Server } = require("socket.io");
 
 const io = new Server(server, {
   cors: {
@@ -40,6 +40,23 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
   res.json({ roomId });
 });
 
+app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
+  try {
+    const response: { id: number; name: string; revealed: boolean }[] =
+      await dbClient.query("SELECT * from rooms where id = :roomId", {
+        replacements: { roomId: req.params.roomId },
+        type: QueryTypes.SELECT,
+      });
+
+    const room = response[0];
+    room.revealed = !!room.revealed;
+
+    res.send(room);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // 特定の部屋のユーザを全て取得
 app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
@@ -50,14 +67,10 @@ app.get("/api/users/:roomId", async (req: Request, res: Response) => {
         type: QueryTypes.SELECT,
       }
     );
-    console.log(users);
     res.send(users);
   } catch (err) {
     console.error(err);
   }
-
-  console.log(req.params.roomId, req.params.userId == null);
-  res.send();
 });
 
 // 部屋に紐づくユーザを作成
@@ -114,8 +127,51 @@ app.put("/api/users/:userId", async (req: Request, res: Response) => {
   }
 });
 
-io.on("connection", () => {
+io.on("connection", (socket: Socket) => {
+  console.log("socketId", socket.id);
+  socket.on("disconnect", (reason) => {
+    console.log(reason);
+    console.log(socket.id);
+  });
+
   console.log("a user connected");
+  socket.on("join_room", async (data: { roomId: string }) => {
+    socket.join(data.roomId);
+    const users = await dbClient.query(
+      "SELECT id, point FROM users WHERE room_id = :roomId;",
+      {
+        replacements: {
+          roomId: data.roomId,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+    io.to(data.roomId).emit("user_points", { users });
+    io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
+  });
+
+  socket.on("add_point", async (data) => {
+    await dbClient.query("UPDATE users SET point = :point WHERE id = :userId", {
+      replacements: { userId: data.userId, point: data.point },
+      type: QueryTypes.INSERT,
+    });
+
+    const users = await dbClient.query(
+      "SELECT id, point FROM users WHERE room_id = :roomId;",
+      {
+        replacements: {
+          roomId: data.roomId,
+        },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    io.to(data.roomId).emit("user_points", { users });
+  });
+
+  socket.on("revealAll", (data) => {
+    io.to(data.roomId).emit("revealedAll");
+  });
 });
 
 server.listen(port, async () => {
