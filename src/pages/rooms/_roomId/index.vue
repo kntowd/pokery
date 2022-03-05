@@ -10,7 +10,7 @@
     </div>
     <div class="user-card">
       <div class="user-card__item" v-for="user in users" :key="user.id">
-        {{ user.point }}
+        {{ user.point === "secret" ? "?" : user.point }}
       </div>
     </div>
   </div>
@@ -48,7 +48,13 @@ export default class Room extends Vue {
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
     this.socket.on("joined_room", (data) => console.log(data));
     this.socket.on("user_points", (data) => {
-      this.users = data.users;
+      // eslint-disable-next-line
+      this.users = data.users.map((user) => {
+        if (user.id === Number(localStorage.userId)) {
+          return user;
+        }
+        return { id: user.id, point: "secret" };
+      });
     });
   }
 
