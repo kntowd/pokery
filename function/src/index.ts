@@ -42,13 +42,15 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
 
 app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
   try {
-    const room = await dbClient.query(
-      "SELECT * from rooms where id = :roomId",
-      {
+    const response: { id: number; name: string; revealed: boolean }[] =
+      await dbClient.query("SELECT * from rooms where id = :roomId", {
         replacements: { roomId: req.params.roomId },
         type: QueryTypes.SELECT,
-      }
-    );
+      });
+
+    const room = response[0];
+    room.revealed = !!room.revealed;
+
     res.send(room);
   } catch (err) {
     console.error(err);
