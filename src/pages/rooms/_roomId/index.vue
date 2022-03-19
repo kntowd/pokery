@@ -68,7 +68,7 @@ export default class Room extends Vue {
 
     this.revealed = room.revealed;
 
-    this.socket = io(this.apiBaseUrl);
+    this.socket = io(this.apiBaseUrl, { transports: ["websocket"] });
     this.socket.emit("join_room", { roomId: this.$route.params.roomId });
     this.socket.on("joined_room", (data) => console.log(data));
     this.socket.on("user_points", (data) => {
