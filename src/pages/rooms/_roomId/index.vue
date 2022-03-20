@@ -15,7 +15,7 @@
     <div class="answered-card">
       <div
         class="answered-card__item"
-        :class="{ 'answered-card__item--answered': isAnswered(user) }"
+        :class="{ 'answered-card__item--answered': user.answered }"
         v-for="user in getUsers"
         :key="user.id"
       >
@@ -90,9 +90,10 @@ export default class Room extends Vue {
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
-        return user;
+        return { id: user.id, point: user.point, answered: user.point != null };
       }
-      return { id: user.id, point: "secret" };
+      console.log(user);
+      return { id: user.id, point: "secret", answered: user.point != null };
     });
   }
 
@@ -103,11 +104,6 @@ export default class Room extends Vue {
       point,
     });
     this.point = point;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  isAnswered(user) {
-    return user.point != null;
   }
 
   // eslint-disable-next-line class-methods-use-this
