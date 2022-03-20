@@ -1,17 +1,21 @@
 <template>
   <div>
-    <div class="choices-card">
-      <div class="choices-card__item" @click="changePoint(1)">1</div>
-      <div class="choices-card__item" @click="changePoint(2)">2</div>
-      <div class="choices-card__item" @click="changePoint(3)">3</div>
-      <div class="choices-card__item" @click="changePoint(5)">5</div>
-      <div class="choices-card__item" @click="changePoint(8)">8</div>
-      <div class="choices-card__item" @click="changePoint(13)">13</div>
-    </div>
-    <div class="user-card">
+    <div class="choices-field">
       <div
-        class="user-card__item"
-        :class="{ 'user-card__item--answered': isAnswered(user) }"
+        class="choices-field__card"
+        v-for="number in fibonacciNumbers"
+        :key="number"
+      >
+        <choice-card
+          :content="number"
+          @click="changePoint(number)"
+        ></choice-card>
+      </div>
+    </div>
+    <div class="answered-card">
+      <div
+        class="answered-card__item"
+        :class="{ 'answered-card__item--answered': isAnswered(user) }"
         v-for="user in getUsers"
         :key="user.id"
       >
@@ -31,6 +35,8 @@ import apiClient from "@/lib/apiClient";
 
 @Component
 export default class Room extends Vue {
+  fibonacciNumbers = [1, 2, 3, 5, 8, 13];
+
   point = 0;
 
   socket = null;
@@ -113,11 +119,11 @@ export default class Room extends Vue {
 </script>
 
 <style>
-.choices-card {
+.choices-field {
   display: flex;
 }
 
-.choices-card__item {
+.card {
   background-color: #b07bac;
   color: #fff;
   font-size: 45px;
@@ -131,11 +137,11 @@ export default class Room extends Vue {
   cursor: pointer;
 }
 
-.user-card {
+.answered-card {
   display: flex;
 }
 
-.user-card__item {
+.answered-card__item {
   font-size: 45px;
   font-weight: 700;
   border-radius: 20px;
@@ -148,7 +154,7 @@ export default class Room extends Vue {
   border-style: dotted;
 }
 
-.user-card__item--answered {
+.answered-card__item--answered {
   border-style: solid;
   background-color: rgba(176, 123, 172, 0.4);
 }
