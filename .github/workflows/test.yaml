@@ -1,0 +1,11 @@
+name: ci test
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: build test
+        run: yarn build
