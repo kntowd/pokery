@@ -34,7 +34,7 @@ import apiClient from "@/lib/apiClient";
 
 @Component
 export default class Room extends Vue {
-  fibonacciNumbers = [1, 2, 3, 5, 8, 13];
+  fibonacciNumbers = [1, 2, 3, 5, 8, 13, 21];
 
   point = 0;
 
@@ -104,7 +104,6 @@ export default class Room extends Vue {
     this.point = point;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async revealAll() {
     this.revealed = true;
     this.socket.emit("revealAll", { roomId: localStorage.roomId });
