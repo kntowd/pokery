@@ -1,6 +1,9 @@
 name: ci test
 on: push
 jobs:
+  defaults:
+    run:
+      working-directory: src
   build:
     runs-on: ubuntu-latest
     steps:
