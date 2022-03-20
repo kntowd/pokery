@@ -27,7 +27,7 @@
 <script la="ts">
 import { Vue, Component } from "nuxt-property-decorator";
 import { io } from "socket.io-client";
-import apiClient from "../../../lib/apiClient";
+import apiClient from "@/lib/apiClient";
 
 @Component
 export default class Room extends Vue {
@@ -76,7 +76,6 @@ export default class Room extends Vue {
     });
     this.socket.on("revealedAll", () => {
       this.revealed = true;
-      console.log("reveal");
     });
   }
 
