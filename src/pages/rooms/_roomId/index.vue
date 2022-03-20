@@ -12,14 +12,13 @@
         ></choice-card>
       </div>
     </div>
-    <div class="answered-card">
+    <div class="answered-field">
       <div
-        class="answered-card__item"
-        :class="{ 'answered-card__item--answered': user.answered }"
-        v-for="user in getUsers"
+        class="answered-field__card"
+        v-for="user in displayUsers"
         :key="user.id"
       >
-        {{ user.point === "secret" ? "?" : user.point }}
+        <answered-card :user="user" />
       </div>
     </div>
     <div>
@@ -85,14 +84,13 @@ export default class Room extends Vue {
     });
   }
 
-  get getUsers() {
+  get displayUsers() {
     if (this.revealed) return this.users;
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
         return { id: user.id, point: user.point, answered: user.point != null };
       }
-      console.log(user);
       return { id: user.id, point: "secret", answered: user.point != null };
     });
   }
@@ -119,39 +117,15 @@ export default class Room extends Vue {
   display: flex;
 }
 
-.card {
-  background-color: #b07bac;
-  color: #fff;
-  font-size: 45px;
-  font-weight: 700;
-  border-radius: 20px;
-  width: 150px;
-  height: 200px;
+.choices-field__card {
   margin: 20px;
-  line-height: 200px;
-  text-align: center;
-  cursor: pointer;
 }
 
-.answered-card {
+.answered-field {
   display: flex;
 }
 
-.answered-card__item {
-  font-size: 45px;
-  font-weight: 700;
-  border-radius: 20px;
-  width: 150px;
-  height: 200px;
+.answered-field__card {
   margin: 20px;
-  line-height: 200px;
-  text-align: center;
-  cursor: pointer;
-  border-style: dotted;
-}
-
-.answered-card__item--answered {
-  border-style: solid;
-  background-color: rgba(176, 123, 172, 0.4);
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="card choices-field__card" @click="click(content)">
-    {{ content }}
+  <div class="card" :class="{ 'card--answered': user.answered }">
+    {{ user.point === "secret" ? "?" : user.point }}
   </div>
 </template>
 
@@ -8,19 +8,19 @@
 import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 @Component
-export default class ChoiceCard extends Vue {
+export default class AnsweredCard extends Vue {
   @Prop() readonly content!: number;
 
-  click(content) {
-    this.$emit("click", content);
-  }
+  @Prop() readonly user!: {
+    id: number;
+    point: number | string;
+    answered: boolean;
+  };
 }
 </script>
 
 <style scoped>
 .card {
-  background-color: #b07bac;
-  color: #fff;
   font-size: 45px;
   font-weight: 700;
   border-radius: 20px;
@@ -29,5 +29,11 @@ export default class ChoiceCard extends Vue {
   line-height: 200px;
   text-align: center;
   cursor: pointer;
+  border-style: dotted;
+}
+
+.card--answered {
+  border-style: solid;
+  background-color: rgba(176, 123, 172, 0.4);
 }
 </style>

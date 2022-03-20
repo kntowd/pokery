@@ -1,5 +1,5 @@
 <template>
-  <div class="card choices-field__card" @click="click(content)">
+  <div class="card" @click="click(content)">
     {{ content }}
   </div>
 </template>
