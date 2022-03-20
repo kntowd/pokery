@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  ignorePatterns: ["node_modules/*", "dist/*"],
   extends: ["plugin:vue/essential", "airbnb-base", "prettier"],
   parserOptions: {
     ecmaVersion: 13,
