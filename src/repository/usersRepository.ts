@@ -2,6 +2,7 @@ import { ApiClient } from "./ApiClient";
 
 export interface UsersInterface {
   get(userid: Number, roomId: Number): Promise<object>;
+  getAll(roomId: Number): Promise<object>;
 }
 
 export class UsersRepository implements UsersInterface {
@@ -11,9 +12,13 @@ export class UsersRepository implements UsersInterface {
     this.apiClient = apiClient;
   }
 
-  // eslint-disable-next-line
   async get(userId: Number, roomId: Number) {
     const response = await this.apiClient.get(`/users/${userId}/${roomId}`);
+    return response;
+  }
+
+  async getAll(roomId: Number): Promise<object> {
+    const response = await this.apiClient.get(`/users/${roomId}`);
     return response;
   }
 }

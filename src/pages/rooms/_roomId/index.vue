@@ -60,13 +60,7 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
-    const usersResponse = await fetch(
-      `${this.apiBaseUrl}/api/users/${this.$route.params.roomId}`
-    );
-
-    const users = await usersResponse.json();
-
-    this.users = users;
+    this.users = await this.$users.getAll(this.$route.params.roomId);
 
     const room = await apiClient(`/rooms/${this.$route.params.roomId}`);
 
