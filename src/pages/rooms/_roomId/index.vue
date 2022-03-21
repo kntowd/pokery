@@ -51,6 +51,12 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
+    const hoge = await this.$users.get(
+      localStorage.userId,
+      this.$route.params.roomId
+    );
+    console.log(hoge);
+
     const response = await fetch(
       `${this.apiBaseUrl}/api/users/${localStorage.userId}/${this.$route.params.roomId}`
     );

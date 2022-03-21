@@ -11,7 +11,7 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 export default class ChoiceCard extends Vue {
   @Prop() readonly content!: number;
 
-  click(content) {
+  click(content: number) {
     this.$emit("click", content);
   }
 }
