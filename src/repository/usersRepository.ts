@@ -1,13 +1,13 @@
-import { ApiClientInterface } from "./ApiClient";
+import { ApiClient } from "./ApiClient";
 
 export interface UsersInterface {
   get(userid: Number, roomId: Number): Promise<object>;
 }
 
 export class UsersRepository implements UsersInterface {
-  private apiClient: ApiClientInterface;
+  private apiClient: ApiClient;
 
-  constructor(apiClient: ApiClientInterface) {
+  constructor(apiClient: ApiClient) {
     this.apiClient = apiClient;
   }
 

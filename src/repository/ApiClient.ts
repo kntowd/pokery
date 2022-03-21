@@ -1,8 +1,3 @@
-const environment = process.env.NODE_ENV || "development";
-
-// eslint-disable-next-line import/no-dynamic-require
-const { env } = require(`../env/env.${environment}.js`);
-
 export interface ApiClientInterface {
   get(apiPath: string): Promise<{ [key: string]: string }>;
   post(
@@ -11,15 +6,21 @@ export interface ApiClientInterface {
   ): Promise<{ [key: string]: string }>;
 }
 
-export class ApiClient implements ApiClientInterface {
+export class ApiClient {
+  private env: { [key: string]: string };
+
+  constructor(env: { [key: string]: string }) {
+    this.env = env;
+  }
+
   async get(apiPath: string) {
-    const response = await fetch(`${env.apiBaseUrl}/api${apiPath}`);
+    const response = await fetch(`${this.env.apiBaseUrl}/api${apiPath}`);
     const data = await response.json();
     return data;
   }
 
   async post(apiPath: string, requestBody: { [key: string]: string }) {
-    const response = await fetch(`${env.apiBaseUrl}/api${apiPath}`, {
+    const response = await fetch(`${this.env.apiBaseUrl}/api${apiPath}`, {
       method: "POSt",
       headers: {
         "Content-Type": "application/json",
