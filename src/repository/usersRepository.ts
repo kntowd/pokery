@@ -1,8 +1,14 @@
 import { ApiClient } from "./ApiClient";
 
+export interface User {
+  name: string;
+  point: number;
+  roomId: number;
+}
+
 export interface UsersInterface {
-  get(userid: Number, roomId: Number): Promise<object>;
-  getAll(roomId: Number): Promise<object>;
+  get(userid: number, roomId: number): Promise<User[]>;
+  getAll(roomId: number): Promise<User[]>;
 }
 
 export class UsersRepository implements UsersInterface {
@@ -12,12 +18,12 @@ export class UsersRepository implements UsersInterface {
     this.apiClient = apiClient;
   }
 
-  async get(userId: Number, roomId: Number) {
+  async get(userId: number, roomId: number) {
     const response = await this.apiClient.get(`/users/${userId}/${roomId}`);
     return response;
   }
 
-  async getAll(roomId: Number): Promise<object> {
+  async getAll(roomId: number): Promise<User[]> {
     const response = await this.apiClient.get(`/users/${roomId}`);
     return response;
   }
