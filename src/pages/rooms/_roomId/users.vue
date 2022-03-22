@@ -31,23 +31,15 @@ export default class CreateUser extends Vue {
   }
 
   createUser() {
-    const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
+    const { appBaseUrl } = this.$nuxt.context.$config.env;
     const { roomId } = this.$route.params;
 
     localStorage.setItem("roomId", roomId);
 
-    fetch(`${apiBaseUrl}/api/users/${roomId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: this.name }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        localStorage.setItem("userId", data.userId);
-        window.location.href = `${appBaseUrl}/rooms/${roomId}`;
-      });
+    const { userId } = this.$users.post(roomId, this.name);
+
+    localStorage.setItem("userId", userId);
+    window.location.href = `${appBaseUrl}/rooms/${roomId}`;
   }
 }
 </script>

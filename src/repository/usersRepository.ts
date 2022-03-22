@@ -9,6 +9,7 @@ export interface User {
 export interface UsersInterface {
   get(userid: number, roomId: number): Promise<User[]>;
   getAll(roomId: number): Promise<User[]>;
+  post(roomId: number, name: string): Promise<User>;
 }
 
 export class UsersRepository implements UsersInterface {
@@ -25,6 +26,11 @@ export class UsersRepository implements UsersInterface {
 
   async getAll(roomId: number): Promise<User[]> {
     const response = await this.apiClient.get(`/users/${roomId}`);
+    return response;
+  }
+
+  async post(roomId: number, name: string): Promise<User> {
+    const response = await this.apiClient.post(`/users/${roomId}`, { name });
     return response;
   }
 }
