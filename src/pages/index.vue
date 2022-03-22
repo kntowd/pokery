@@ -17,16 +17,13 @@ import { Vue, Component } from "nuxt-property-decorator";
 export default class Index extends Vue {
   title = "";
 
-  createRoom() {
-    const { apiBaseUrl, appBaseUrl } = this.$nuxt.context.$config.env;
-    fetch(`${apiBaseUrl}/api/rooms`, {
-      method: "POST",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        localStorage.setItem("roomId", data.roomId);
-        window.location.href = `${appBaseUrl}/rooms/${data.roomId}/users`;
-      });
+  async createRoom() {
+    const { appBaseUrl } = this.$nuxt.context.$config.env;
+
+    const { roomId } = await this.$rooms.post();
+
+    localStorage.setItem("roomId", roomId);
+    window.location.href = `${appBaseUrl}/rooms/${roomId}/users`;
   }
 }
 </script>

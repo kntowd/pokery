@@ -19,7 +19,7 @@ export class ApiClient {
     return data;
   }
 
-  async post(apiPath: string, requestBody: { [key: string]: string }) {
+  async post(apiPath: string, requestBody?: { [key: string]: string }) {
     const response = await fetch(`${this.env.apiBaseUrl}/api${apiPath}`, {
       method: "POSt",
       headers: {

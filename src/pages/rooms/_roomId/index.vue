@@ -27,10 +27,9 @@
   </div>
 </template>
 
-<script la="ts">
+<script lang="ts">
 import { Vue, Component } from "nuxt-property-decorator";
 import { io } from "socket.io-client";
-import apiClient from "@/lib/apiClient";
 
 @Component
 export default class Room extends Vue {
@@ -62,7 +61,7 @@ export default class Room extends Vue {
 
     this.users = await this.$users.getAll(this.$route.params.roomId);
 
-    const room = await apiClient(`/rooms/${this.$route.params.roomId}`);
+    const room = await this.$rooms.get(this.$route.params.roomId);
 
     this.revealed = room.revealed;
 

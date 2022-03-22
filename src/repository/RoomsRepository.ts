@@ -22,4 +22,9 @@ export class RoomsRepository implements RoomsInterface {
     const response = await this.apiClient.get(`/rooms/${roomId}`);
     return response;
   }
+
+  async post() {
+    const response = await this.apiClient.post("/rooms");
+    return response;
+  }
 }
