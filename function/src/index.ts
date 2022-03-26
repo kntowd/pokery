@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { Request, response, Response } from "express";
 import { QueryTypes } from "sequelize";
 import { Server, Socket } from "socket.io";
 import http from "http";
@@ -23,33 +23,44 @@ const port = 8080;
 
 // 部屋を作成
 app.post("/api/rooms", async (_req: Request, res: Response) => {
-  const roomId = getRandomNumber();
   try {
-    await dbClient.query("INSERT INTO rooms (id) VALUES(:roomId)", {
-      replacements: { roomId },
-      type: QueryTypes.INSERT,
-    });
+    const roomId = getRandomNumber();
+    await dbClient.query(
+      `
+      INSERT INTO rooms (id) 
+      VALUES(:roomId)
+    `,
+      {
+        replacements: { roomId },
+        type: QueryTypes.INSERT,
+      }
+    );
+    res.json({ roomId });
   } catch (err) {
-    console.error(err);
+    res.status(500);
   }
-
-  res.json({ roomId });
 });
 
 app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
   try {
     const response: { id: number; name: string; revealed: boolean }[] =
-      await dbClient.query("SELECT * from rooms where id = :roomId", {
-        replacements: { roomId: req.params.roomId },
-        type: QueryTypes.SELECT,
-      });
+      await dbClient.query(
+        `
+        SELECT * from rooms 
+        WHERE id = :roomId
+        `,
+        {
+          replacements: { roomId: req.params.roomId },
+          type: QueryTypes.SELECT,
+        }
+      );
 
     const room = response[0];
     room.revealed = !!room.revealed;
 
-    res.send(room);
+    res.json({ room });
   } catch (err) {
-    console.error(err);
+    res.status(500);
   }
 });
 
@@ -57,15 +68,19 @@ app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
 app.get("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
     const users = await dbClient.query(
-      "SELECT id, name, point, room_id AS roomId FROM users WHERE room_id = :roomId",
+      `
+        SELECT id, name, point, room_id AS roomId 
+        FROM users 
+        WHERE room_id = :roomId
+      `,
       {
         replacements: { roomId: Number(req.params.roomId) },
         type: QueryTypes.SELECT,
       }
     );
-    res.send(users);
+    res.json({ users });
   } catch (err) {
-    console.error(err);
+    res.status(500);
   }
 });
 
@@ -81,10 +96,8 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
     );
     res.json({ userId: userIds[0] });
   } catch (err) {
-    console.error(err);
+    res.status(500);
   }
-
-  console.log(req.params.roomId, req.params.userId == null);
 });
 
 // ユーザを取得
@@ -101,11 +114,10 @@ app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
       }
     );
     const user = response[0];
-    console.log("¥¥¥¥¥¥¥¥¥¥", user);
 
-    res.json(user || {});
+    res.json({ user: user || {} });
   } catch (err) {
-    console.error(err);
+    response.status(500);
   }
 });
 
@@ -119,9 +131,9 @@ app.put("/api/users/:userId", async (req: Request, res: Response) => {
         type: QueryTypes.INSERT,
       }
     );
-    res.send(user);
+    res.send({ user });
   } catch (err) {
-    console.error(err);
+    response.status(500);
   }
 });
 
@@ -172,12 +184,4 @@ io.on("connection", (socket: Socket) => {
   });
 });
 
-server.listen(port, async () => {
-  try {
-    await dbClient.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+server.listen(port, async () => {});

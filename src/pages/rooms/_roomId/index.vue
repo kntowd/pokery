@@ -50,7 +50,7 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
-    const user = await this.$users.get(
+    const { user } = await this.$users.get(
       localStorage.userId,
       this.$route.params.roomId
     );
@@ -59,7 +59,8 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
-    this.users = await this.$users.getAll(this.$route.params.roomId);
+    const { users } = await this.$users.getAll(this.$route.params.roomId);
+    this.users = users;
 
     const room = await this.$rooms.get(this.$route.params.roomId);
 

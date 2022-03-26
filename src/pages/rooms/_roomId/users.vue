@@ -17,7 +17,7 @@ export default class CreateUser extends Vue {
     const { roomId } = this.$route.params;
     const userId = localStorage.getItem("userId");
 
-    const user = await this.$users.get(userId, roomId);
+    const { user } = await this.$users.get(userId, roomId);
 
     if (user.name != null) {
       this.$router.push(`/rooms/${roomId}`);
