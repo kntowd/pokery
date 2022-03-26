@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { QueryTypes } from "sequelize";
 import { Server, Socket } from "socket.io";
+import http from "http";
+import cors from "cors";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
-
-const express = require("express");
-const http = require("http");
 
 const app = express();
 app.use(express.json());
@@ -19,7 +18,6 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-const cors = require("cors");
 
 const port = 8080;
 
