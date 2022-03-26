@@ -27,7 +27,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { Vue, Component } from "nuxt-property-decorator";
 import { io } from "socket.io-client";
 

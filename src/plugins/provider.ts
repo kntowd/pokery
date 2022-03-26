@@ -1,6 +1,6 @@
-import { ApiClient } from "~/repository/ApiClient";
-import { RoomsRepository } from "~/repository/RoomsRepository";
-import { UsersRepository } from "~/repository/UsersRepository";
+import { ApiClient } from "@/repository/ApiClient";
+import { RoomsRepository } from "@/repository/RoomsRepository";
+import { UsersRepository } from "@/repository/UsersRepository";
 
 const environment = process.env.NODE_ENV || "development";
 // eslint-disable-next-line import/no-dynamic-require
