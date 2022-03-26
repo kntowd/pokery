@@ -55,6 +55,8 @@ export default class Room extends Vue {
       this.$route.params.roomId
     );
 
+    console.log("user", user);
+
     if (user.length === 0) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }

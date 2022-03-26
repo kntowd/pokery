@@ -28,6 +28,7 @@ export class ApiClient {
       body: JSON.stringify(requestBody),
     });
     const data = await response.json();
+    console.log("data", data);
     return data;
   }
 }

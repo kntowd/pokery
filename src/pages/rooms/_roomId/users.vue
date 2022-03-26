@@ -25,16 +25,15 @@ export default class CreateUser extends Vue {
     }
   }
 
-  createUser() {
+  async createUser() {
     const { roomId } = this.$route.params;
 
     localStorage.setItem("roomId", roomId);
 
-    const { userId } = this.$users.post(roomId, this.name);
-
+    const { userId } = await this.$users.post(roomId, this.name);
     localStorage.setItem("userId", userId);
 
-    this.router.push(`/rooms/${roomId}`);
+    this.$router.push(`/rooms/${roomId}`);
   }
 }
 </script>
