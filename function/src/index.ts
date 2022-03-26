@@ -76,14 +76,14 @@ app.get("/api/users/:roomId", async (req: Request, res: Response) => {
 // 部屋に紐づくユーザを作成
 app.post("/api/users/:roomId", async (req: Request, res: Response) => {
   try {
-    const userId = await dbClient.query(
+    const userIds = await dbClient.query(
       "INSERT INTO users (name, room_id) VALUES(:name, :roomId)",
       {
         replacements: { name: req.body.name, roomId: req.params.roomId },
         type: QueryTypes.INSERT,
       }
     );
-    res.json({ userId: userId[0] });
+    res.json({ userId: userIds[0] });
   } catch (err) {
     console.error(err);
   }
@@ -94,7 +94,7 @@ app.post("/api/users/:roomId", async (req: Request, res: Response) => {
 // ユーザを取得
 app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
   try {
-    const user = await dbClient.query(
+    const response = await dbClient.query(
       "SELECT name, point, room_id AS roomId FROM users WHERE room_id = :roomId AND id = :userId;",
       {
         replacements: {
@@ -104,8 +104,10 @@ app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
         type: QueryTypes.SELECT,
       }
     );
-    console.log("user------------------------", user);
-    res.send(user);
+    const user = response[0];
+    console.log("¥¥¥¥¥¥¥¥¥¥", user);
+
+    res.json(user || {});
   } catch (err) {
     console.error(err);
   }

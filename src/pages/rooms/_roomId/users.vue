@@ -13,14 +13,13 @@ import { Vue, Component } from "nuxt-property-decorator";
 export default class CreateUser extends Vue {
   name = "";
 
-  userId = null;
-
   async created() {
     const { roomId } = this.$route.params;
+    const userId = localStorage.getItem("userId");
 
-    const user = await this.$users.get(this.userId, roomId);
+    const user = await this.$users.get(userId, roomId);
 
-    if (user.length !== 0) {
+    if (user.name != null) {
       this.$router.push(`/rooms/${roomId}`);
     }
   }

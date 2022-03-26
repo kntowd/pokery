@@ -16,6 +16,7 @@ export class ApiClient {
   async get(apiPath: string) {
     const response = await fetch(`${this.env.apiBaseUrl}/api${apiPath}`);
     const data = await response.json();
+    console.log(data);
     return data;
   }
 
@@ -28,7 +29,6 @@ export class ApiClient {
       body: JSON.stringify(requestBody),
     });
     const data = await response.json();
-    console.log("data", data);
     return data;
   }
 }
