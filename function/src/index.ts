@@ -2,13 +2,13 @@ import express, { Request, Response } from "express";
 import { QueryTypes } from "sequelize";
 import { Server, Socket } from "socket.io";
 import http from "http";
-import cors from "cors";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
+import serverMiddleWare from "./server";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+serverMiddleWare(app);
 
 const server = http.createServer(app);
 
@@ -20,8 +20,6 @@ const io = new Server(server, {
 });
 
 const port = 8080;
-
-app.use(cors());
 
 // 部屋を作成
 app.post("/api/rooms", async (_req: Request, res: Response) => {
