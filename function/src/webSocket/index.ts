@@ -41,7 +41,18 @@ const webSocketEvents = (io: Server) => {
       io.to(data.roomId).emit("user_points", { users });
     });
 
-    socket.on("revealAll", (data) => {
+    socket.on("revealAll", async (data) => {
+      await dbClient.query(
+        `
+          UPDATE rooms SET revealed = true
+          WHERE id = :roomId
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
       io.to(data.roomId).emit("revealedAll");
     });
   });

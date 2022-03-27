@@ -62,8 +62,7 @@ export default class Room extends Vue {
     const { users } = await this.$users.getAll(this.$route.params.roomId);
     this.users = users;
 
-    const room = await this.$rooms.get(this.$route.params.roomId);
-
+    const { room } = await this.$rooms.get(this.$route.params.roomId);
     this.revealed = room.revealed;
 
     this.socket = io(this.apiBaseUrl, { transports: ["websocket"] });
