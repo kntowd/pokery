@@ -9,8 +9,6 @@ import { Vue, Component, Prop } from "nuxt-property-decorator";
 
 @Component
 export default class AnsweredCard extends Vue {
-  @Prop() readonly content!: number;
-
   @Prop() readonly user!: {
     id: number;
     point: number | string;

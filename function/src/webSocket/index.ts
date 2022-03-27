@@ -7,7 +7,7 @@ const webSocketEvents = (io: Server) => {
     socket.on("join_room", async (data: { roomId: string }) => {
       socket.join(data.roomId);
       const users = await dbClient.query(
-        "SELECT id, point FROM users WHERE room_id = :roomId;",
+        "SELECT id, point, name, room_id FROM users WHERE room_id = :roomId;",
         {
           replacements: {
             roomId: data.roomId,
@@ -16,7 +16,6 @@ const webSocketEvents = (io: Server) => {
         }
       );
       io.to(data.roomId).emit("user_points", { users });
-      io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
     });
 
     socket.on("add_point", async (data) => {
@@ -29,7 +28,7 @@ const webSocketEvents = (io: Server) => {
       );
 
       const users = await dbClient.query(
-        "SELECT id, point FROM users WHERE room_id = :roomId;",
+        "SELECT id, point, name, room_id FROM users WHERE room_id = :roomId;",
         {
           replacements: {
             roomId: data.roomId,
@@ -41,8 +40,46 @@ const webSocketEvents = (io: Server) => {
       io.to(data.roomId).emit("user_points", { users });
     });
 
-    socket.on("revealAll", (data) => {
+    socket.on("revealAll", async (data) => {
+      await dbClient.query(
+        `
+          UPDATE rooms SET revealed = true
+          WHERE id = :roomId
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
       io.to(data.roomId).emit("revealedAll");
+    });
+
+    socket.on("reset", async (data) => {
+      await dbClient.query(
+        `
+          UPDATE users SET point = NULL
+          WHERE room_id = :roomId
+        
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
+      await dbClient.query(
+        `
+          UPDATE rooms SET revealed = false
+          WHERE id = :roomId
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
+      io.to(data.roomId).emit("reset");
     });
   });
 };

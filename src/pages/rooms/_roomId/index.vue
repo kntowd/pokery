@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="choices-field">
+    <div class="choices-field" :class="{ notOperated: revealed }">
       <div
         class="choices-field__card"
         v-for="number in fibonacciNumbers"
@@ -18,11 +18,12 @@
         v-for="user in displayUsers"
         :key="user.id"
       >
-        <answered-card :user="user" />
+        <answered-card-with-name :user="user" />
       </div>
     </div>
     <div>
       <button @click="revealAll()">Reveal cards</button>
+      <button @click="reset()">Reset</button>
     </div>
   </div>
 </template>
@@ -58,23 +59,14 @@ export default class Room extends Vue {
     if (user.name == null) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
-
     const { users } = await this.$users.getAll(this.$route.params.roomId);
     this.users = users;
 
-    const room = await this.$rooms.get(this.$route.params.roomId);
-
+    const { room } = await this.$rooms.get(this.$route.params.roomId);
     this.revealed = room.revealed;
 
     this.socket = io(this.apiBaseUrl, { transports: ["websocket"] });
-    this.socket.emit("join_room", { roomId: this.$route.params.roomId });
-    this.socket.on("joined_room", (data) => console.log(data));
-    this.socket.on("user_points", (data) => {
-      this.users = data.users;
-    });
-    this.socket.on("revealedAll", () => {
-      this.revealed = true;
-    });
+    this.webSocketEvents();
   }
 
   get displayUsers() {
@@ -83,14 +75,25 @@ export default class Room extends Vue {
         id: user.id,
         point: user.point,
         answered: user.point != null,
+        name: user.name,
       }));
     }
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
-        return { id: user.id, point: user.point, answered: user.point != null };
+        return {
+          id: user.id,
+          point: user.point,
+          answered: user.point != null,
+          name: user.name,
+        };
       }
-      return { id: user.id, point: "secret", answered: user.point != null };
+      return {
+        id: user.id,
+        point: "secret",
+        answered: user.point != null,
+        name: user.name,
+      };
     });
   }
 
@@ -107,12 +110,39 @@ export default class Room extends Vue {
     this.revealed = true;
     this.socket.emit("revealAll", { roomId: localStorage.roomId });
   }
+
+  async reset() {
+    this.revealed = false;
+    this.socket.emit("reset", { roomId: localStorage.roomId });
+  }
+
+  webSocketEvents() {
+    this.socket.emit("join_room", { roomId: this.$route.params.roomId });
+    this.socket.on("user_points", (data) => {
+      this.users = data.users;
+    });
+    this.socket.on("revealedAll", () => {
+      this.revealed = true;
+    });
+    this.socket.on("reset", () => {
+      this.revealed = false;
+      this.users.forEach((userData) => {
+        // eslint-disable-next-line
+        userData.point = null;
+      });
+    });
+  }
 }
 </script>
 
 <style>
 .choices-field {
   display: flex;
+}
+
+.notOperated {
+  background-color: #afafb0;
+  pointer-events: none;
 }
 
 .choices-field__card {
