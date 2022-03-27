@@ -1,10 +1,11 @@
 import express, { Request, response, Response } from "express";
 import { QueryTypes } from "sequelize";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import http from "http";
 import getRandomNumber from "./lib/randomNumber";
 import dbClient from "./connection";
 import serverMiddleWare from "./server";
+import webSocketEvents from "./webSocket/index";
 
 const app = express();
 
@@ -43,7 +44,7 @@ app.post("/api/rooms", async (_req: Request, res: Response) => {
 
 app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
   try {
-    const response: { id: number; name: string; revealed: boolean }[] =
+    const result: { id: number; name: string; revealed: boolean }[] =
       await dbClient.query(
         `
         SELECT * from rooms 
@@ -55,7 +56,7 @@ app.get("/api/rooms/:roomId", async (req: Request, res: Response) => {
         }
       );
 
-    const room = response[0];
+    const room = result[0];
     room.revealed = !!room.revealed;
 
     res.json({ room });
@@ -137,51 +138,6 @@ app.put("/api/users/:userId", async (req: Request, res: Response) => {
   }
 });
 
-io.on("connection", (socket: Socket) => {
-  console.log("socketId", socket.id);
-  socket.on("disconnect", (reason) => {
-    console.log(reason);
-    console.log(socket.id);
-  });
-
-  console.log("a user connected");
-  socket.on("join_room", async (data: { roomId: string }) => {
-    socket.join(data.roomId);
-    const users = await dbClient.query(
-      "SELECT id, point FROM users WHERE room_id = :roomId;",
-      {
-        replacements: {
-          roomId: data.roomId,
-        },
-        type: QueryTypes.SELECT,
-      }
-    );
-    io.to(data.roomId).emit("user_points", { users });
-    io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
-  });
-
-  socket.on("add_point", async (data) => {
-    await dbClient.query("UPDATE users SET point = :point WHERE id = :userId", {
-      replacements: { userId: data.userId, point: data.point },
-      type: QueryTypes.INSERT,
-    });
-
-    const users = await dbClient.query(
-      "SELECT id, point FROM users WHERE room_id = :roomId;",
-      {
-        replacements: {
-          roomId: data.roomId,
-        },
-        type: QueryTypes.SELECT,
-      }
-    );
-
-    io.to(data.roomId).emit("user_points", { users });
-  });
-
-  socket.on("revealAll", (data) => {
-    io.to(data.roomId).emit("revealedAll");
-  });
-});
+webSocketEvents(io);
 
 server.listen(port, async () => {});

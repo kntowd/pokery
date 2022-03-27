@@ -78,7 +78,13 @@ export default class Room extends Vue {
   }
 
   get displayUsers() {
-    if (this.revealed) return this.users;
+    if (this.revealed) {
+      return this.users.map((user) => ({
+        id: user.id,
+        point: user.point,
+        answered: user.point != null,
+      }));
+    }
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
