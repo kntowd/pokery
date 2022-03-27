@@ -86,7 +86,7 @@ const router = (app: Express) => {
   // ユーザを取得
   app.get("/api/users/:userId/:roomId", async (req: Request, res: Response) => {
     try {
-      const response = await dbClient.query(
+      const result = await dbClient.query(
         "SELECT name, point, room_id AS roomId FROM users WHERE room_id = :roomId AND id = :userId;",
         {
           replacements: {
@@ -96,7 +96,7 @@ const router = (app: Express) => {
           type: QueryTypes.SELECT,
         }
       );
-      const user = response[0];
+      const user = result[0];
 
       res.json({ user: user || {} });
     } catch (err) {
