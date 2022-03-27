@@ -16,7 +16,6 @@ const webSocketEvents = (io: Server) => {
         }
       );
       io.to(data.roomId).emit("user_points", { users });
-      io.to(data.roomId).emit("joined_room", "部屋に参加したよ");
     });
 
     socket.on("add_point", async (data) => {
