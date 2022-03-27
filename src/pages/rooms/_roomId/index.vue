@@ -18,7 +18,7 @@
         v-for="user in displayUsers"
         :key="user.id"
       >
-        <answered-card :user="user" />
+        <answered-card-with-name :user="user" />
       </div>
     </div>
     <div>
@@ -84,19 +84,31 @@ export default class Room extends Vue {
   }
 
   get displayUsers() {
+    console.log("users2", this.users);
     if (this.revealed) {
       return this.users.map((user) => ({
         id: user.id,
         point: user.point,
         answered: user.point != null,
+        name: user.name,
       }));
     }
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
-        return { id: user.id, point: user.point, answered: user.point != null };
+        return {
+          id: user.id,
+          point: user.point,
+          answered: user.point != null,
+          name: user.name,
+        };
       }
-      return { id: user.id, point: "secret", answered: user.point != null };
+      return {
+        id: user.id,
+        point: "secret",
+        answered: user.point != null,
+        name: user.name,
+      };
     });
   }
 

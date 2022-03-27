@@ -7,7 +7,7 @@ const webSocketEvents = (io: Server) => {
     socket.on("join_room", async (data: { roomId: string }) => {
       socket.join(data.roomId);
       const users = await dbClient.query(
-        "SELECT id, point FROM users WHERE room_id = :roomId;",
+        "SELECT id, point, name, room_id FROM users WHERE room_id = :roomId;",
         {
           replacements: {
             roomId: data.roomId,
@@ -29,7 +29,7 @@ const webSocketEvents = (io: Server) => {
       );
 
       const users = await dbClient.query(
-        "SELECT id, point FROM users WHERE room_id = :roomId;",
+        "SELECT id, point, name, room_id FROM users WHERE room_id = :roomId;",
         {
           replacements: {
             roomId: data.roomId,
