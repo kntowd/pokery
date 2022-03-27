@@ -1,0 +1,14 @@
+name: ci test
+on: push
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: src
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: lint test
+        run: yarn lint

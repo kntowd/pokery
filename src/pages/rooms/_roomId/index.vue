@@ -1,21 +1,24 @@
 <template>
   <div>
-    <div class="choices-card">
-      <div class="choices-card__item" @click="changePoint(1)">1</div>
-      <div class="choices-card__item" @click="changePoint(2)">2</div>
-      <div class="choices-card__item" @click="changePoint(3)">3</div>
-      <div class="choices-card__item" @click="changePoint(5)">5</div>
-      <div class="choices-card__item" @click="changePoint(8)">8</div>
-      <div class="choices-card__item" @click="changePoint(13)">13</div>
-    </div>
-    <div class="user-card">
+    <div class="choices-field">
       <div
-        class="user-card__item"
-        :class="{ 'user-card__item--answered': isAnswered(user) }"
-        v-for="user in getUsers"
+        class="choices-field__card"
+        v-for="number in fibonacciNumbers"
+        :key="number"
+      >
+        <choice-card
+          :content="number"
+          @click="changePoint(number)"
+        ></choice-card>
+      </div>
+    </div>
+    <div class="answered-field">
+      <div
+        class="answered-field__card"
+        v-for="user in displayUsers"
         :key="user.id"
       >
-        {{ user.point === "secret" ? "?" : user.point }}
+        <answered-card :user="user" />
       </div>
     </div>
     <div>
@@ -24,13 +27,14 @@
   </div>
 </template>
 
-<script la="ts">
+<script>
 import { Vue, Component } from "nuxt-property-decorator";
 import { io } from "socket.io-client";
-import apiClient from "../../../lib/apiClient";
 
 @Component
 export default class Room extends Vue {
+  fibonacciNumbers = [1, 2, 3, 5, 8, 13, 21];
+
   point = 0;
 
   socket = null;
@@ -46,25 +50,19 @@ export default class Room extends Vue {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
-    const response = await fetch(
-      `${this.apiBaseUrl}/api/users/${localStorage.userId}/${this.$route.params.roomId}`
+    const { user } = await this.$users.get(
+      localStorage.userId,
+      this.$route.params.roomId
     );
 
-    const user = await response.json();
-
-    if (user.length === 0) {
+    if (user.name == null) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
 
-    const usersResponse = await fetch(
-      `${this.apiBaseUrl}/api/users/${this.$route.params.roomId}`
-    );
-
-    const users = await usersResponse.json();
-
+    const { users } = await this.$users.getAll(this.$route.params.roomId);
     this.users = users;
 
-    const room = await apiClient(`/rooms/${this.$route.params.roomId}`);
+    const room = await this.$rooms.get(this.$route.params.roomId);
 
     this.revealed = room.revealed;
 
@@ -76,18 +74,23 @@ export default class Room extends Vue {
     });
     this.socket.on("revealedAll", () => {
       this.revealed = true;
-      console.log("reveal");
     });
   }
 
-  get getUsers() {
-    if (this.revealed) return this.users;
+  get displayUsers() {
+    if (this.revealed) {
+      return this.users.map((user) => ({
+        id: user.id,
+        point: user.point,
+        answered: user.point != null,
+      }));
+    }
 
     return this.users.map((user) => {
       if (user.id === Number(localStorage.userId)) {
-        return user;
+        return { id: user.id, point: user.point, answered: user.point != null };
       }
-      return { id: user.id, point: "secret" };
+      return { id: user.id, point: "secret", answered: user.point != null };
     });
   }
 
@@ -100,12 +103,6 @@ export default class Room extends Vue {
     this.point = point;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  isAnswered(user) {
-    return user.point != null;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   async revealAll() {
     this.revealed = true;
     this.socket.emit("revealAll", { roomId: localStorage.roomId });
@@ -114,43 +111,19 @@ export default class Room extends Vue {
 </script>
 
 <style>
-.choices-card {
+.choices-field {
   display: flex;
 }
 
-.choices-card__item {
-  background-color: #b07bac;
-  color: #fff;
-  font-size: 45px;
-  font-weight: 700;
-  border-radius: 20px;
-  width: 150px;
-  height: 200px;
+.choices-field__card {
   margin: 20px;
-  line-height: 200px;
-  text-align: center;
-  cursor: pointer;
 }
 
-.user-card {
+.answered-field {
   display: flex;
 }
 
-.user-card__item {
-  font-size: 45px;
-  font-weight: 700;
-  border-radius: 20px;
-  width: 150px;
-  height: 200px;
+.answered-field__card {
   margin: 20px;
-  line-height: 200px;
-  text-align: center;
-  cursor: pointer;
-  border-style: dotted;
-}
-
-.user-card__item--answered {
-  border-style: solid;
-  background-color: rgba(176, 123, 172, 0.4);
 }
 </style>
