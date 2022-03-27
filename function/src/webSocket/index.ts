@@ -55,6 +55,33 @@ const webSocketEvents = (io: Server) => {
 
       io.to(data.roomId).emit("revealedAll");
     });
+
+    socket.on("reset", async (data) => {
+      await dbClient.query(
+        `
+          UPDATE users SET point = NULL
+          WHERE room_id = :roomId
+        
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
+      await dbClient.query(
+        `
+          UPDATE rooms SET revealed = false
+          WHERE id = :roomId
+        `,
+        {
+          replacements: { roomId: data.roomId },
+          type: QueryTypes.UPDATE,
+        }
+      );
+
+      io.to(data.roomId).emit("reset");
+    });
   });
 };
 

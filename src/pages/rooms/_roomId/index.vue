@@ -23,6 +23,7 @@
     </div>
     <div>
       <button @click="revealAll()">Reveal cards</button>
+      <button @click="reset()">Reset</button>
     </div>
   </div>
 </template>
@@ -73,6 +74,13 @@ export default class Room extends Vue {
     this.socket.on("revealedAll", () => {
       this.revealed = true;
     });
+    this.socket.on("reset", () => {
+      this.revealed = false;
+      this.users.forEach((userData) => {
+        // eslint-disable-next-line
+        userData.point = null;
+      });
+    });
   }
 
   get displayUsers() {
@@ -104,6 +112,11 @@ export default class Room extends Vue {
   async revealAll() {
     this.revealed = true;
     this.socket.emit("revealAll", { roomId: localStorage.roomId });
+  }
+
+  async reset() {
+    this.revealed = false;
+    this.socket.emit("reset", { roomId: localStorage.roomId });
   }
 }
 </script>
