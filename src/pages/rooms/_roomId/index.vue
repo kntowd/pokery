@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="choices-field">
+    <div class="choices-field" :class="{ notOperated: revealed }">
       <div
         class="choices-field__card"
         v-for="number in fibonacciNumbers"
@@ -59,7 +59,6 @@ export default class Room extends Vue {
     if (user.name == null) {
       this.$router.push(`/rooms/${this.$route.params.roomId}/users`);
     }
-
     const { users } = await this.$users.getAll(this.$route.params.roomId);
     this.users = users;
 
@@ -67,24 +66,10 @@ export default class Room extends Vue {
     this.revealed = room.revealed;
 
     this.socket = io(this.apiBaseUrl, { transports: ["websocket"] });
-    this.socket.emit("join_room", { roomId: this.$route.params.roomId });
-    this.socket.on("user_points", (data) => {
-      this.users = data.users;
-    });
-    this.socket.on("revealedAll", () => {
-      this.revealed = true;
-    });
-    this.socket.on("reset", () => {
-      this.revealed = false;
-      this.users.forEach((userData) => {
-        // eslint-disable-next-line
-        userData.point = null;
-      });
-    });
+    this.webSocketEvents();
   }
 
   get displayUsers() {
-    console.log("users2", this.users);
     if (this.revealed) {
       return this.users.map((user) => ({
         id: user.id,
@@ -130,12 +115,34 @@ export default class Room extends Vue {
     this.revealed = false;
     this.socket.emit("reset", { roomId: localStorage.roomId });
   }
+
+  webSocketEvents() {
+    this.socket.emit("join_room", { roomId: this.$route.params.roomId });
+    this.socket.on("user_points", (data) => {
+      this.users = data.users;
+    });
+    this.socket.on("revealedAll", () => {
+      this.revealed = true;
+    });
+    this.socket.on("reset", () => {
+      this.revealed = false;
+      this.users.forEach((userData) => {
+        // eslint-disable-next-line
+        userData.point = null;
+      });
+    });
+  }
 }
 </script>
 
 <style>
 .choices-field {
   display: flex;
+}
+
+.notOperated {
+  background-color: #afafb0;
+  pointer-events: none;
 }
 
 .choices-field__card {
